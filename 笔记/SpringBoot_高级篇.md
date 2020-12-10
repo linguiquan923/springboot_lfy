@@ -1,24 +1,9 @@
-package com.atlgq.springboot.service.impl;
+# 缓存体验
 
-import com.atlgq.springboot.mapper.EmployeeMapper;
-import com.atlgq.springboot.pojo.Employee;
-import com.atlgq.springboot.service.EmployeeService;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
+原理
 
-import javax.annotation.Resource;
-
-@Service
-public class EmployeeImpl implements EmployeeService
-{
-    @Resource
-    private EmployeeMapper mapper;
-    @Override
-    public Integer insertEmployee(Employee employee) {
-        return mapper.insertEmployee(employee);
-    }
-
-    /**
+```java
+/**
      * 将运行的方法进行缓存；以后要用相同的数据时，直接从缓存中获取，不用调用方法
      *
      * CacheManager管理多个Cache组件的，对缓存的真正CRUD操作在Cache组件中，每一个缓存组件都有自己唯一的名字；
@@ -65,22 +50,80 @@ public class EmployeeImpl implements EmployeeService
      * @param id
      * @return
      */
-//    @Cacheable(cacheNames = {"emp"},key = "#id",condition = "#id > 0",unless = "#result == null")
+```
 
-    @Cacheable(cacheNames = {"emp"},condition = "#id > 1",unless = "#a0 == 2")
+## 1、主启动类
+
+```java
+@MapperScan(value = "com.atlgq.springboot.mapper")
+@SpringBootApplication
+@EnableCaching //开启缓存注解
+public class SpringBoot01CacheApplication {
+```
+
+## 2、在imple层上面加
+
+```java
+ @Cacheable(cacheNames = {"emp"})
     @Override
     public Employee queryEmployeeById(Integer id) {
         System.out.println("查询" + id + "....");
         return mapper.queryEmployeeById(id);
     }
+```
 
-    @Override
-    public Integer deleteEmployeeById(Integer id) {
-        return mapper.deleteEmployeeById(id);
-    }
+未添加缓存效果
 
-    @Override
-    public Integer updateEmployeeById(Integer id, String lastName) {
-        return mapper.updateEmployeeById(id,lastName);
-    }
-}
+![image-20201210221922943](C:\Users\Admin\AppData\Roaming\Typora\typora-user-images\image-20201210221922943.png)
+
+添加缓存效果
+
+![image-20201210222029317](C:\Users\Admin\AppData\Roaming\Typora\typora-user-images\image-20201210222029317.png)
+
+## @Cacheable的其他属性
+
+1、cacheName/value：指定缓存的名字；将方法的返回结果放在哪个缓存当中，是数组的方式，可以指定多个缓存；
+
+2、key：可以指定key生成的样式，生成key的样式为**getEmp[2]**
+
+```java
+key="#root.methodName+'['#id']'"
+```
+
+3、keyGenerator；可以自定义
+
+新建config/MyCacheConfig
+
+
+
+4、cacheManager；后面再说
+
+
+
+5、condition
+
+```java
+condition = "#id > 1" //id大于1的话就缓存
+```
+
+![image-20201210225800154](C:\Users\Admin\AppData\Roaming\Typora\typora-user-images\image-20201210225800154.png)
+
+
+
+6、unless
+
+```java
+unless = "#a0 == 2" //第一个参数的值如果为2，那么就不缓存
+```
+
+![image-20201210225904371](C:\Users\Admin\AppData\Roaming\Typora\typora-user-images\image-20201210225904371.png)
+
+7、sync：是否异步
+
+默认是同步的方法，如果使用
+
+```java
+sync = "true"
+```
+
+那么unless的属性就不会生效

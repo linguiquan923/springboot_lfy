@@ -3,6 +3,7 @@ package com.atlgq.springboot;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 /**
  * 一、基本环境准备
@@ -15,11 +16,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 步骤：
  *      1、开启基于注解的缓存
  *      2、标注缓存注解即可
+ *          @Cacheable
+ *          @CacheEvict
+ *          @CachePut
  */
 
 
 @MapperScan(value = "com.atlgq.springboot.mapper")
 @SpringBootApplication
+@EnableCaching //开启缓存注解
 public class SpringBoot01CacheApplication {
 
     public static void main(String[] args) {

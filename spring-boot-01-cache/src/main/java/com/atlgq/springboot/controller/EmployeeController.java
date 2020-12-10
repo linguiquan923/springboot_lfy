@@ -2,6 +2,7 @@ package com.atlgq.springboot.controller;
 
 import com.atlgq.springboot.pojo.Employee;
 import com.atlgq.springboot.service.EmployeeService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import javax.annotation.Resource;
 
 @RestController
 public class EmployeeController {
+
 
     @Resource
     private EmployeeService employeeService;
@@ -31,6 +33,7 @@ public class EmployeeController {
     {
         return  employeeService.updateEmployeeById(id,lastName);
     }
+
     @GetMapping(value = "/query/{id}")
     public Employee query(@PathVariable("id") Integer id){
         return employeeService.queryEmployeeById(id);
